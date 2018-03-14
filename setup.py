@@ -16,6 +16,10 @@ setup(
                  'to simplify testing of asynchronous tornado applications.'),
     long_description=long_description,
     url='https://github.com/vidartf/pytest-tornado',
+    author='Eugeniy Kalinin',
+    author_email='burump@gmail.com',
+    maintainer='Vidar Tonaas Fauske',
+    maintainer_email='vidartf@gmail.com',
     license='Apache License, Version 2.0',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
