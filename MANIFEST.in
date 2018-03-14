@@ -1,1 +1,3 @@
 include LICENSE
+
+prune pytest_tornado5/test
