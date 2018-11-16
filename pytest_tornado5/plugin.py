@@ -39,18 +39,23 @@ def pytest_configure(config):
 
 
 def _argnames(func):
-    spec = inspect.getargspec(func)
-    if spec.defaults:
-        return spec.args[:-len(spec.defaults)]
-    if isinstance(func, types.FunctionType):
-        return spec.args
-    # Func is a bound method, skip "self"
-    return spec.args[1:]
+    if sys.version_info[0] >= 3:
+        sig_object = inspect.signature(func)
+        params = sig_object.parameters.values()
+        return [param.name for param in params if param.name is not 'self']
+    else:
+        spec = inspect.getargspec(func)
+        if spec.defaults:
+            return spec.args[:-len(spec.defaults)]
+        if isinstance(func, types.FunctionType):
+            return spec.args
+        # Func is a bound method, skip "self"
+        return spec.args[1:]
 
 
 def _timeout(item):
     default_timeout = item.config.getoption('async_test_timeout')
-    gen_test = item.get_marker('gen_test')
+    gen_test = item.get_closest_marker('gen_test')
     if gen_test:
         return gen_test.kwargs.get('timeout', default_timeout)
     return default_timeout
@@ -72,7 +77,7 @@ def pytest_runtest_setup(item):
 
 @pytest.mark.tryfirst
 def pytest_pyfunc_call(pyfuncitem):
-    gen_test_mark = pyfuncitem.keywords.get('gen_test')
+    gen_test_mark = pyfuncitem.get_closest_marker('gen_test')
     if gen_test_mark:
         io_loop = pyfuncitem.funcargs.get('io_loop')
         run_sync = gen_test_mark.kwargs.get('run_sync', True)
@@ -148,7 +153,7 @@ def http_server(request, io_loop, _unused_port):
     Raises:
         FixtureLookupError: tornado application fixture not found
     """
-    http_app = request.getfuncargvalue(request.config.option.app_fixture)
+    http_app = request.getfixturevalue(request.config.option.app_fixture)
     server = tornado.httpserver.HTTPServer(http_app)
     server.add_socket(_unused_port[0])
 

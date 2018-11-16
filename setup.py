@@ -36,7 +36,7 @@ setup(
     keywords=('pytest py.test tornado async asynchronous '
               'testing unit tests plugin'),
     packages=find_packages(),
-    install_requires=['pytest', 'tornado>=5'],
+    install_requires=['pytest>=3.6', 'tornado>=5'],
     entry_points={
         'pytest11': ['tornado = pytest_tornado5.plugin'],
     },
